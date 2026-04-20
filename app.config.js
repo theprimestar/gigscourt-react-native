@@ -1,4 +1,7 @@
-module.exports = {
+// This import allows using TypeScript for the config plugin
+import 'tsx/cjs';
+
+const config = {
   expo: {
     name: "GigsCourt",
     slug: "gigscourt",
@@ -28,9 +31,19 @@ module.exports = {
         {
           ios: {
             deploymentTarget: "15.1"
+          },
+          android: {
+            compileSdkVersion: 35,
+            targetSdkVersion: 35,
+            buildToolsVersion: "35.0.0"
           }
         }
       ]
-    ]
+    ],
+    // Explicitly disabling New Architecture ensures a smooth first build.
+    // You can remove this line later after testing the upgrade.
+    newArchEnabled: false
   }
 };
+
+export default config;
