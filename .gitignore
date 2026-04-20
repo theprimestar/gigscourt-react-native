@@ -62,3 +62,7 @@ temp/
 
 # React Native
 .expo/
+
+# Expo generated native projects
+ios/
+android/
