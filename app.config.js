@@ -1,6 +1,3 @@
-// This import allows using TypeScript for the config plugin
-import 'tsx/cjs';
-
 const config = {
   expo: {
     name: "GigsCourt",
@@ -40,10 +37,8 @@ const config = {
         }
       ]
     ],
-    // Explicitly disabling New Architecture ensures a smooth first build.
-    // You can remove this line later after testing the upgrade.
     newArchEnabled: false
   }
 };
 
-export default config;
+module.exports = config;
