@@ -24,12 +24,19 @@ jobs:
         run: npm install -g expo-cli
 
       - name: Prebuild iOS Project
-        run: npx expo prebuild --platform ios --clean
+        run: |
+          npx expo prebuild --platform ios --clean
+          cd ios
+          sed -i '' 's/platform :ios, .*/platform :ios, "13.4"/' Podfile || true
+
+      - name: Install CocoaPods Dependencies
+        run: |
+          cd ios
+          pod install --repo-update
 
       - name: Build unsigned IPA
         run: |
           cd ios
-          pod install --repo-update
           if [ ! -d "GigsCourt.xcworkspace" ]; then
             echo "❌ GigsCourt.xcworkspace not found"
             exit 1
@@ -46,6 +53,9 @@ jobs:
             DEVELOPMENT_TEAM="" \
             PROVISIONING_PROFILE_SPECIFIER=""
           cd ..
+
+      - name: Create IPA file
+        run: |
           mkdir -p Payload
           cp -r ios/build/Build/Products/Release-iphoneos/GigsCourt.app Payload/
           zip -r GigsCourt-iOS-Unsigned.ipa Payload/
