@@ -26,14 +26,14 @@ jobs:
       - name: Prebuild iOS Project
         run: npx expo prebuild --platform ios --clean
 
-      - name: Install CocoaPods dependencies
-        run: |
-          cd ios
-          pod install || true
-
       - name: Build unsigned IPA
         run: |
           cd ios
+          pod install --repo-update
+          if [ ! -d "GigsCourt.xcworkspace" ]; then
+            echo "❌ GigsCourt.xcworkspace not found"
+            exit 1
+          fi
           xcodebuild clean build \
             -workspace GigsCourt.xcworkspace \
             -scheme GigsCourt \
@@ -42,10 +42,10 @@ jobs:
             -derivedDataPath ./build \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
-
-      - name: Create IPA file
-        run: |
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM="" \
+            PROVISIONING_PROFILE_SPECIFIER=""
+          cd ..
           mkdir -p Payload
           cp -r ios/build/Build/Products/Release-iphoneos/GigsCourt.app Payload/
           zip -r GigsCourt-iOS-Unsigned.ipa Payload/
