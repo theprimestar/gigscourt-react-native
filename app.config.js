@@ -13,9 +13,7 @@ module.exports = {
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.gigscourt.app",
-      deploymentTarget: "13.4",
-      buildNumber: "1"
+      bundleIdentifier: "com.gigscourt.app"
     },
     android: {
       adaptiveIcon: {
@@ -29,7 +27,7 @@ module.exports = {
         "expo-build-properties",
         {
           ios: {
-            deploymentTarget: "13.4"
+            deploymentTarget: "15.1"
           }
         }
       ]
