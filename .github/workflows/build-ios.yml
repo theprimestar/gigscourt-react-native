@@ -20,6 +20,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Generate iOS project
+        run: |
+          cd ios
+          xcodebuild -project GigsCourt.xcodeproj -target GigsCourt -configuration Release -sdk iphoneos -derivedDataPath ./build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO || true
+
       - name: Install CocoaPods dependencies
         run: |
           cd ios
