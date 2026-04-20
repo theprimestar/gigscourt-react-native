@@ -1,0 +1,55 @@
+name: Build iOS IPA (Unsigned)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    name: Build Unsigned iOS IPA
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+          pod install || true
+
+      - name: Build unsigned IPA
+        run: |
+          cd ios
+          xcodebuild clean build \
+            -workspace GigsCourt.xcworkspace \
+            -scheme GigsCourt \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath ./build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Create IPA file
+        run: |
+          mkdir -p Payload
+          cp -r ios/build/Build/Products/Release-iphoneos/GigsCourt.app Payload/
+          zip -r GigsCourt-iOS-Unsigned.ipa Payload/
+          mkdir -p output
+          mv GigsCourt-iOS-Unsigned.ipa output/
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GigsCourt-Unsigned-iOS
+          path: output/GigsCourt-iOS-Unsigned.ipa
+          retention-days: 30
