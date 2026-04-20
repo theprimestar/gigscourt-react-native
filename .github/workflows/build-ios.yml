@@ -23,11 +23,23 @@ jobs:
       - name: Install Expo CLI
         run: npm install -g expo-cli
 
-      - name: Prebuild iOS Project
+      - name: Prebuild iOS Project (Skip Pod Install)
         run: |
-          npx expo prebuild --platform ios --clean
+          npx expo prebuild --platform ios --clean --no-install
+
+      - name: Fix Podfile Deployment Target
+        run: |
           cd ios
-          sed -i '' 's/platform :ios, .*/platform :ios, "13.4"/' Podfile || true
+          # Force iOS deployment target to 15.0 to satisfy React-RuntimeHermes
+          sed -i '' 's/platform :ios, .*/platform :ios, "15.0"/' Podfile
+          # Also set in all target build settings
+          echo "post_install do |installer|" >> Podfile
+          echo "  installer.pods_project.targets.each do |target|" >> Podfile
+          echo "    target.build_configurations.each do |config|" >> Podfile
+          echo "      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'" >> Podfile
+          echo "    end" >> Podfile
+          echo "  end" >> Podfile
+          echo "end" >> Podfile
 
       - name: Install CocoaPods Dependencies
         run: |
