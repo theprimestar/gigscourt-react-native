@@ -36,8 +36,7 @@ const config = {
           }
         }
       ]
-    ],
-    newArchEnabled: false
+    ]
   }
 };
 
