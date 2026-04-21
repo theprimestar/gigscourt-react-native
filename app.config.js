@@ -21,22 +21,7 @@ const config = {
         backgroundColor: "#ffffff"
       },
       package: "com.gigscourt.app"
-    },
-    plugins: [
-      [
-        "expo-build-properties",
-        {
-          ios: {
-            deploymentTarget: "15.1"
-          },
-          android: {
-            compileSdkVersion: 35,
-            targetSdkVersion: 35,
-            buildToolsVersion: "35.0.0"
-          }
-        }
-      ]
-    ]
+    }
   }
 };
 
