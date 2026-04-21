@@ -20,11 +20,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install Expo CLI
-        run: npm install -g expo-cli
-
       - name: Prebuild Android Project
-        run: npx expo prebuild --platform android --clean
+        run: npx expo prebuild --platform android --clean --no-install
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -40,10 +37,34 @@ jobs:
           cd android
           ./gradlew assembleRelease
 
-      - name: Create output directory
+      - name: Locate and copy APK
         run: |
           mkdir -p output
-          cp android/app/build/outputs/apk/release/app-release-unsigned.apk output/GigsCourt-Android-Unsigned.apk
+          echo "Searching for APK files..."
+          find android -name "*.apk" -type f
+          
+          if [ -f "android/app/build/outputs/apk/release/app-release.apk" ]; then
+            cp android/app/build/outputs/apk/release/app-release.apk output/GigsCourt-Android-Unsigned.apk
+            echo "Found app-release.apk"
+          elif [ -f "android/app/build/outputs/apk/release/app-release-unsigned.apk" ]; then
+            cp android/app/build/outputs/apk/release/app-release-unsigned.apk output/GigsCourt-Android-Unsigned.apk
+            echo "Found app-release-unsigned.apk"
+          elif [ -f "android/app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp android/app/build/outputs/apk/debug/app-debug.apk output/GigsCourt-Android-Unsigned.apk
+            echo "Found app-debug.apk"
+          else
+            APK_PATH=$(find android -name "*.apk" -type f | head -1)
+            if [ -n "$APK_PATH" ]; then
+              cp "$APK_PATH" output/GigsCourt-Android-Unsigned.apk
+              echo "Found APK at: $APK_PATH"
+            else
+              echo "❌ No APK found"
+              exit 1
+            fi
+          fi
+          
+          echo "✅ APK copied to output/"
+          ls -la output/
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
